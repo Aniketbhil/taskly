@@ -4,6 +4,7 @@ gunicorn
 sqlalchemy
 asyncpg
 pydantic
+pydantic-settings
 python-dotenv
 python-jose
 passlib[argon2]
