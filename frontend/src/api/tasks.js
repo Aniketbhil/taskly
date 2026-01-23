@@ -65,3 +65,17 @@ export async function deleteTask(taskId) {
     throw new Error("Failed to delete task")
   }
 }
+// Update full task (title / description / status)
+export async function updateTask(taskId, updates) {
+  const response = await fetch(`${API_URL}/${taskId}`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(updates),
+  })
+
+  if (!response.ok) {
+    throw new Error("Failed to update task")
+  }
+
+  return await response.json()
+}
