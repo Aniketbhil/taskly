@@ -1,6 +1,5 @@
 import { getToken } from "../auth/authService"
-
-const API_URL = "http://localhost:8000/api/v1/tasks"
+import { API_BASE_URL } from "./config"
 
 // Helper to build auth headers
 function authHeaders() {
@@ -13,7 +12,7 @@ function authHeaders() {
 
 // Get all tasks
 export async function getTasks() {
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_BASE_URL}/tasks`, {
     headers: authHeaders(),
   })
 
@@ -26,7 +25,7 @@ export async function getTasks() {
 
 // Create new task
 export async function createTask(task) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_BASE_URL}/tasks`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(task),
@@ -41,7 +40,7 @@ export async function createTask(task) {
 
 // Update task status
 export async function updateTaskStatus(taskId, status) {
-  const response = await fetch(`${API_URL}/${taskId}`, {
+  const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
     method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify({ status }),
@@ -56,7 +55,7 @@ export async function updateTaskStatus(taskId, status) {
 
 // Delete task
 export async function deleteTask(taskId) {
-  const response = await fetch(`${API_URL}/${taskId}`, {
+  const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
     method: "DELETE",
     headers: authHeaders(),
   })
@@ -65,9 +64,10 @@ export async function deleteTask(taskId) {
     throw new Error("Failed to delete task")
   }
 }
+
 // Update full task (title / description / status)
 export async function updateTask(taskId, updates) {
-  const response = await fetch(`${API_URL}/${taskId}`, {
+  const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
     method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(updates),
