@@ -9,3 +9,4 @@ python-dotenv
 python-jose
 passlib[argon2]
 bcrypt
+email-validator
