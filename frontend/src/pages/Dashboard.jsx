@@ -1,57 +1,62 @@
 import { useEffect, useState } from "react"
-import { fetchTasks, createTask, deleteTask, updateTask } from "../api/taskService"
-import { logout } from "../auth/authService"
-import { useNavigate } from "react-router-dom"
+import { getTasks } from "../api/tasks"
 import TaskForm from "../components/TaskForm"
 import TaskList from "../components/TaskList"
-
+import { logout } from "../auth/authService"
 
 function Dashboard() {
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const navigate = useNavigate()
-
-  // Fetch tasks on load
-  useEffect(() => {
-    loadTasks()
-  }, [])
-
   const loadTasks = async () => {
-    setLoading(true)
-    setError(null)
-
     try {
-      const data = await fetchTasks()
+      const data = await getTasks()
       setTasks(data)
     } catch (err) {
-      setError(err.message)
+      setError("Failed to load tasks")
     } finally {
       setLoading(false)
     }
   }
 
+  useEffect(() => {
+    loadTasks()
+  }, [])
+
   const handleLogout = () => {
     logout()
-    navigate("/login")
+    window.location.href = "/login"
   }
 
   return (
-    <div style={{ maxWidth: "800px", margin: "50px auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Taskly Dashboard</h1>
-        <button onClick={handleLogout}>Logout</button>
+    <div className="container">
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1 className="title">Taskly Dashboard</h1>
+        <button className="btn btn-danger" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
 
       {loading && <p>Loading tasks...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && !error && (
-        <>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr",
+            gap: 24,
+            marginTop: 24,
+          }}
+        >
+          {/* LEFT: Create Task */}
           <TaskForm onTaskCreated={loadTasks} />
+
+          {/* RIGHT: Task List */}
           <TaskList tasks={tasks} onDelete={loadTasks} onUpdate={loadTasks} />
-        </>
+        </div>
       )}
     </div>
   )

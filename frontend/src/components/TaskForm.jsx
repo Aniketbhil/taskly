@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { createTask } from "../api/taskService"
+import { createTask } from "../api/tasks"
 
 function TaskForm({ onTaskCreated }) {
   const [title, setTitle] = useState("")
@@ -9,47 +9,58 @@ function TaskForm({ onTaskCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setError(null)
+    setLoading(true)
 
     try {
-      await createTask({ title, description })
+      await createTask({
+        title,
+        description,
+      })
+
       setTitle("")
       setDescription("")
       onTaskCreated()
     } catch (err) {
-      setError(err.message)
+      setError("Failed to create task")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ marginBottom: "30px" }}>
-      <h3>Create Task</h3>
+    <div className="card">
+      <h3 className="subtitle">Create Task</h3>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "red", marginBottom: 12 }}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div>
+        <div style={{ marginBottom: 12 }}>
           <input
             type="text"
             placeholder="Task title"
+            className="input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
         </div>
 
-        <div>
+        <div style={{ marginBottom: 12 }}>
           <textarea
             placeholder="Description (optional)"
+            className="input"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={3}
           />
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button
+          className="btn btn-primary"
+          style={{ width: "100%" }}
+          disabled={loading}
+        >
           {loading ? "Creating..." : "Create Task"}
         </button>
       </form>

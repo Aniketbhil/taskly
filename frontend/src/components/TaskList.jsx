@@ -1,44 +1,102 @@
-import { deleteTask, updateTask } from "../api/taskService"
+import { useState } from "react"
+import { updateTaskStatus, deleteTask } from "../api/tasks"
 
 function TaskList({ tasks, onDelete, onUpdate }) {
-  if (tasks.length === 0) {
-    return <p>No tasks yet.</p>
+  const [loadingId, setLoadingId] = useState(null)
+  const [error, setError] = useState(null)
+
+  const handleStatus = async (taskId, status) => {
+    setError(null)
+    setLoadingId(taskId)
+
+    try {
+      await updateTaskStatus(taskId, status)
+      onUpdate()
+    } catch (err) {
+      setError("Failed to update task status")
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleDelete = async (taskId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this task?")
+    if (!confirmDelete) return
+
+    setError(null)
+    setLoadingId(taskId)
+
+    try {
+      await deleteTask(taskId)
+      onDelete()
+    } catch (err) {
+      setError("Failed to delete task")
+    } finally {
+      setLoadingId(null)
+    }
   }
 
   return (
     <div>
-      <h3>Your Tasks</h3>
+      <h3 className="subtitle">Your Tasks</h3>
+
+      {error && <p style={{ color: "red", marginBottom: 12 }}>{error}</p>}
+
+      {tasks.length === 0 && <p>No tasks yet. Create one!</p>}
 
       {tasks.map((task) => (
-        <div
-          key={task.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
-          <h4>{task.title}</h4>
-          {task.description && <p>{task.description}</p>}
+        <div key={task.id} className="card" style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <h4 style={{ margin: 0 }}>{task.title}</h4>
+              {task.description && (
+                <p style={{ color: "#6b7280", fontSize: 14 }}>
+                  {task.description}
+                </p>
+              )}
+            </div>
 
-          <p>Status: <b>{task.status}</b></p>
+            <span style={{ fontWeight: 600, color: "#2563eb" }}>
+              {task.status}
+            </span>
+          </div>
 
-          <div>
-            <button onClick={() => handleStatus(task, "todo", onUpdate)}>
+          <div
+            style={{
+              marginTop: 12,
+              display: "flex",
+              gap: 8,
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              className="btn"
+              disabled={loadingId === task.id}
+              onClick={() => handleStatus(task.id, "todo")}
+            >
               Todo
             </button>
 
-            <button onClick={() => handleStatus(task, "in_progress", onUpdate)}>
+            <button
+              className="btn"
+              disabled={loadingId === task.id}
+              onClick={() => handleStatus(task.id, "in_progress")}
+            >
               In Progress
             </button>
 
-            <button onClick={() => handleStatus(task, "done", onUpdate)}>
+            <button
+              className="btn"
+              disabled={loadingId === task.id}
+              onClick={() => handleStatus(task.id, "done")}
+            >
               Done
             </button>
 
             <button
-              style={{ marginLeft: "10px", color: "red" }}
-              onClick={() => handleDelete(task.id, onDelete)}
+              className="btn btn-danger"
+              disabled={loadingId === task.id}
+              onClick={() => handleDelete(task.id)}
             >
               Delete
             </button>
@@ -47,16 +105,6 @@ function TaskList({ tasks, onDelete, onUpdate }) {
       ))}
     </div>
   )
-}
-
-async function handleDelete(taskId, onDelete) {
-  await deleteTask(taskId)
-  onDelete()
-}
-
-async function handleStatus(task, status, onUpdate) {
-  await updateTask(task.id, { status })
-  onUpdate()
 }
 
 export default TaskList
