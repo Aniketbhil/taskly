@@ -7,8 +7,8 @@ It provides secure authentication, task management (CRUD), status tracking, and 
 
 ## 🚀 Live Demo
 
-- **Frontend (Vercel)**: https://taskly-frontend-iota.vercel.app(Expired)
-- **Backend API (Render)**: https://taskly-backend-5gzf.onrender.com(Expired)  
+- **Frontend (Vercel)**: https://taskly-frontend-iota.vercel.app (Expired)
+- **Backend API (Render)**: https://taskly-backend-5gzf.onrender.com (Expired)  
 - **API Docs (Swagger)**: https://taskly-backend-5gzf.onrender.com/docs
 
 ---
